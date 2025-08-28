@@ -15,6 +15,9 @@ services:
       - MONGO_URI=mongodb://mongo:27017/
       - REDIS_HOST=redis
       - SANDBOX_MANAGER_URL=http://sandbox-manager:8080
+      - LLM_PROVIDER=${LLM_PROVIDER:-openrouter}
+      - MODEL_ID=${MODEL_ID:-anthropic/claude-3-sonnet:free}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       - mongo

@@ -3,14 +3,12 @@ import json
 import requests
 from typing import AsyncGenerator, List, Dict
 
-import openai
+from app.core.llm_provider import get_llm_provider
 from app.domain.models import Session, Message
 
 # --- Environment Variables ---
 TOOL_API_PORT = 8081
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-if OPENAI_API_KEY:
-    openai.api_key = OPENAI_API_KEY
+MODEL_ID = os.environ.get("MODEL_ID", "anthropic/claude-3-sonnet:free")
 
 # --- Prompt Engineering ---
 SYSTEM_PROMPT = """
@@ -21,7 +19,7 @@ You have access to the following tools:
 - Search: perform a web search.
 
 When you need to use a tool, respond with a JSON object with "thought" and "action" fields.
-The "action" field should contain the tool name, the action to perform, and the parameters.
+The "action" field should contain the tool name, the command to perform, and the arguments.
 Example:
 {
     "thought": "I need to see what files are in the current directory.",
@@ -44,11 +42,18 @@ class AgentService:
     """
     The core logic for the PlanAct Agent.
     """
+    def __init__(self):
+        try:
+            self.llm_provider = get_llm_provider()
+            self.llm_client = self.llm_provider.get_client()
+        except ValueError as e:
+            print(f"LLM Provider Error: {e}")
+            self.llm_client = None
 
     def _call_tool(self, sandbox_hostname: str, action: Dict) -> Dict:
         """Calls a tool in the tool-api."""
-        tool = action.get("tool").lower()
-        command = action.get("command").lower()
+        tool = action.get("tool", "").lower()
+        command = action.get("command", "").lower()
         args = action.get("args", {})
 
         try:
@@ -77,22 +82,27 @@ class AgentService:
     async def process_message(
         self, session: Session, user_message: Message
     ) -> AsyncGenerator[str, None]:
-        """
-        Processes a user message, interacts with tools and OpenAI,
-        and yields SSE events.
-        """
+        if not self.llm_client:
+            yield json.dumps({"event": "error", "data": "LLM provider not configured."})
+            yield json.dumps({"event": "end", "data": ""})
+            return
+
         messages = [{"role": "system", "content": SYSTEM_PROMPT}]
         messages.extend([msg.model_dump() for msg in session.conversation.messages])
 
         sandbox_hostname = session.sandbox_id
 
         for _ in range(5): # Limit the number of loops to prevent infinite cycles
-            response = openai.ChatCompletion.create(
-                model="gpt-4", # Or another suitable model
-                messages=messages,
-                temperature=0,
-            )
-            response_text = response.choices[0].message['content']
+            try:
+                response = self.llm_client.ChatCompletion.create(
+                    model=MODEL_ID,
+                    messages=messages,
+                    temperature=0,
+                )
+                response_text = response.choices[0].message['content']
+            except Exception as e:
+                yield json.dumps({"event": "error", "data": f"LLM API Error: {e}"})
+                break
 
             try:
                 response_json = json.loads(response_text)
