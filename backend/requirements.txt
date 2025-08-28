@@ -8,3 +8,6 @@ requests
 python-jose[cryptography]
 passlib[bcrypt]
 sse-starlette
+groq
+together
+huggingface_hub

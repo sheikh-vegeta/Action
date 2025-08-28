@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
-from ...application.services.agent_service import AgentService
-from ...dependencies import get_agent_service
+from ...application.services.agent_service import AgentService # This will be created later
+from ...dependencies import get_agent_service # This will be created later
 from ...domain.models.session import Session
 
 router = APIRouter()
@@ -11,6 +10,7 @@ router = APIRouter()
 async def create_session(
     agent_service: AgentService = Depends(get_agent_service)
 ):
+    # This will be simplified for now, user_id will be handled by auth later
     return await agent_service.create_session(user_id="default_user")
 
 @router.post("/sessions/{session_id}/chat")
