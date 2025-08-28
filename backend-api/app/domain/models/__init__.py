@@ -26,6 +26,9 @@ class Session(BaseModel):
     """
     id: SessionID = Field(default_factory=lambda: SessionID(str(uuid.uuid4())))
     conversation: Conversation = Field(default_factory=Conversation)
+    owner_id: str  # To associate session with a user
+    sandbox_id: str | None = None # To link to a running sandbox
+    vnc_ticket: str | None = None # Short-lived ticket for VNC access
 
 
 class User(BaseModel):

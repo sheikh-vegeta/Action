@@ -8,3 +8,4 @@ requests
 pymongo
 python-jose[cryptography]
 passlib[bcrypt]
+websockets

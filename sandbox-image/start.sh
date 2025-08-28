@@ -16,4 +16,8 @@ WEBSOCKIFY_PID=$!
 chromium-browser --no-sandbox --disable-gpu --remote-debugging-port=9222 &
 CHROME_PID=$!
 
-wait $XVFB_PID $VNC_PID $WEBSOCKIFY_PID $CHROME_PID
+# Start Tool API
+cd /app/tool-api && uvicorn app.main:app --host 0.0.0.0 --port 8081 &
+TOOL_API_PID=$!
+
+wait $XVFB_PID $VNC_PID $WEBSOCKIFY_PID $CHROME_PID $TOOL_API_PID
