@@ -1,10 +1,10 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
-    "builder": "RAILPACK"
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "startCommand": "/usr/bin/supervisord",
     "runtime": "V2",
     "numReplicas": 1,
     "sleepApplication": false,
