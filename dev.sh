@@ -1,2 +1,0 @@
-#!/bin/bash
-./run.sh -f docker-compose.yml -f docker-compose-development.yml up "$@"

@@ -1,7 +1,0 @@
-fastapi
-uvicorn
-python-pty
-requests
-beautifulsoup4
-googlesearch-python
-psutil

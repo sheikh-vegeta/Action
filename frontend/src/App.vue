@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view />
+    <img alt="Agent Action" src="./assets/logo.png" />
+    <h1>Welcome to your Intelligent Conversation Agent</h1>
+    <p>Frontend service is running.</p>
   </div>
 </template>
 
@@ -11,11 +13,12 @@ export default {
 </script>
 
 <style>
-/* Add global styles here */
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f4f4f4;
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
 }
 </style>

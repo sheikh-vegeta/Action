@@ -1,47 +1,30 @@
 version: '3.8'
 
-networks:
-  agent_network:
-    driver: bridge
-
 services:
-  backend-api:
-    build: ./backend-api
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend-api:/app
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/
-      - REDIS_HOST=redis
-      - SANDBOX_MANAGER_URL=http://sandbox-manager:8080
-      - LLM_PROVIDER=${LLM_PROVIDER:-openrouter}
-      - MODEL_ID=${MODEL_ID:-anthropic/claude-3-sonnet:free}
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-    depends_on:
-      - mongo
-      - redis
-    networks:
-      - agent_network
-
-  sandbox-manager:
-    build: ./sandbox-manager
-    ports:
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - COMPOSE_NETWORK_NAME=${COMPOSE_PROJECT_NAME:-agent}_agent_network
-    networks:
-      - agent_network
-
   frontend:
     build: ./frontend
     ports:
       - "5173:5173"
-    volumes:
-      - ./frontend:/app
+    networks:
+      - agent_network
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/
+      - SANDBOX_URL=http://sandbox:8080
+    depends_on:
+      - mongo
+      - sandbox
+    networks:
+      - agent_network
+
+  sandbox:
+    build: ./sandbox
+    ports:
+      - "8080:8080"
     networks:
       - agent_network
 
@@ -49,17 +32,9 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
     networks:
       - agent_network
 
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    networks:
-      - agent_network
-
-volumes:
-  mongo-data:
+networks:
+  agent_network:
+    driver: bridge
