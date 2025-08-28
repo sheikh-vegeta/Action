@@ -77,5 +77,64 @@ graph TD
 
 ## Quickstart
 
-(Quickstart instructions remain the same)
-...
+### Prerequisites
+
+- Docker and Docker Compose
+- An API key from [OpenRouter](https://openrouter.ai/keys) or [OpenAI](https://platform.openai.com/signup).
+
+### 1. Configure Environment Variables
+
+Create a `.env` file in the root of the project by copying the example file:
+
+```bash
+cp .env.example .env
+```
+
+Now, edit the `.env` file with your configuration. At a minimum, you need to set your `OPENROUTER_API_KEY`.
+
+### 2. Build and Run the System Locally
+
+This project includes several utility scripts to simplify common tasks:
+
+- **`run.sh`**: A smart wrapper around `docker compose` / `docker-compose`.
+- **`build.sh`**: Builds all the service images.
+- **`dev.sh`**: Starts the system in development mode with hot-reloading.
+- **`update.sh`**: Pulls the latest base images for the services.
+
+To build and run the system for production, use:
+
+```bash
+# Build the images
+./build.sh
+
+# Start the services
+./run.sh up -d
+```
+
+To run in development mode:
+```bash
+./dev.sh
+```
+
+### 3. Access the Application
+
+- **Frontend**: Open your browser and navigate to `http://localhost:5173`.
+- **Backend API Docs**: The OpenAPI documentation for the backend is available at `http://localhost:8000/docs`.
+
+### 4. Shutting Down
+
+To stop all the services and remove the containers, run:
+
+```bash
+./run.sh down
+```
+
+## Deployment on Railway
+
+This project is configured for deployment on [Railway](https://railway.app/).
+
+Each service that is deployed from source (`backend-api`, `frontend`, `sandbox-manager`) contains a `railway.json` file. This file tells the Railway platform how to build and start the service, solving the "No start command found" error.
+
+When deploying this repository to Railway, the platform will automatically detect these services and configure them according to their respective `railway.json` files. You will also need to create `mongo` and `redis` database services within your Railway project and configure the environment variables accordingly.
+
+**Note on the Sandbox**: The `sandbox-manager` requires access to a Docker daemon to function. This may require a special setup or a dedicated plan on the Railway platform.
