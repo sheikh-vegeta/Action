@@ -1,5 +1,9 @@
 # Intelligent Conversation Agent System
 
+<p align="center">
+  <img src="https://octodex.github.com/images/hula_loop_octodex03.gif" alt="Hula Loop Octodex" width="200"/>
+</p>
+
 This project is a comprehensive, multi-service intelligent conversation agent system. It features a FastAPI backend using Domain-Driven Design (DDD), a Vue 3 frontend, and an isolated Docker-based sandbox environment for secure tool execution.
 
 The system is designed to be extensible, allowing for the addition of new tools and AI models with minimal changes.
@@ -59,7 +63,7 @@ graph TD
 - **Isolated Sandboxes**: Secure tool execution in ephemeral Docker containers.
 - **Pluggable LLM Providers**: Easily switch between OpenRouter, OpenAI, and other providers via configuration.
 - **Real-time Interaction**: Server-Sent Events (SSE) for streaming agent thoughts and actions, and a WebSocket proxy for live VNC interaction.
-- **Extensible Tooling**: A dedicated API within each sandbox allows for easy addition of new tools.
+- **Extensible Tooling**: A dedicated API within each sandbox and a Model Context Protocol (MCP) configuration allow for easy addition of new tools.
 - **Secure by Design**: JWT authentication, VNC access tickets, and sandboxed file system access.
 
 ## Quickstart
@@ -79,38 +83,30 @@ cp .env.example .env
 
 Now, edit the `.env` file with your configuration. At a minimum, you need to set your `OPENROUTER_API_KEY`.
 
-```
-# .env
-
-# --- LLM Configuration ---
-# Set the provider to "openrouter" or "openai"
-LLM_PROVIDER=openrouter
-
-# Set the model ID to use.
-# For OpenRouter, find models at https://openrouter.ai/models
-# A good free model to start with is "anthropic/claude-3-sonnet:free"
-MODEL_ID=anthropic/claude-3-sonnet:free
-
-# --- API Keys ---
-# Get your API key from https://openrouter.ai/keys
-OPENROUTER_API_KEY=your_openrouter_api_key
-
-# Or, if using OpenAI directly:
-OPENAI_API_KEY=your_openai_api_key
-```
-
 ### 2. Build and Run the System
 
-With Docker running, execute the following command from the project root:
+This project includes several utility scripts to simplify common tasks:
+
+- **`run.sh`**: A smart wrapper around `docker compose` / `docker-compose`.
+- **`build.sh`**: Builds all the service images.
+- **`dev.sh`**: Starts the system in development mode with hot-reloading.
+- **`update.sh`**: Pulls the latest base images for the services.
+
+To build and run the system for production, use:
 
 ```bash
-sudo docker compose up --build -d
+# Build the images
+./build.sh
+
+# Start the services
+./run.sh up -d
 ```
 
-This will:
-- Build the Docker images for the `frontend`, `backend-api`, and `sandbox-manager`.
-- The `sandbox-manager` will automatically build the `sandbox-image` on its first run.
-- Start all the services in detached mode.
+To run in development mode:
+```bash
+./dev.sh
+```
+
 
 ### 3. Access the Application
 
@@ -122,5 +118,5 @@ This will:
 To stop all the services and remove the containers, run:
 
 ```bash
-sudo docker compose down
+./run.sh down
 ```
