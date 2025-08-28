@@ -26,3 +26,23 @@ class Session(BaseModel):
     """
     id: SessionID = Field(default_factory=lambda: SessionID(str(uuid.uuid4())))
     conversation: Conversation = Field(default_factory=Conversation)
+
+
+class User(BaseModel):
+    username: str
+    email: str | None = None
+    full_name: str | None = None
+    disabled: bool | None = None
+
+
+class UserInDB(User):
+    hashed_password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: str | None = None

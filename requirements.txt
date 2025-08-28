@@ -5,3 +5,6 @@ sse-starlette
 openai
 python-dotenv
 requests
+pymongo
+python-jose[cryptography]
+passlib[bcrypt]

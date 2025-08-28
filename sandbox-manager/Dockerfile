@@ -2,7 +2,10 @@ FROM python:3.9
 
 WORKDIR /app
 
-# This is a placeholder Dockerfile.
-# We will add more to it later.
+COPY requirements.txt .
 
-CMD ["echo", "sandbox-manager service started"]
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]

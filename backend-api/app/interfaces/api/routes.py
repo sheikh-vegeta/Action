@@ -1,22 +1,37 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Depends
 from sse_starlette.sse import EventSourceResponse
 from app.application.services import SessionService
-from app.domain.models import Session, SessionID, Message
+from app.application.services.auth import AuthService
+from app.domain.models import Session, SessionID, Message, User
+from fastapi.security import OAuth2PasswordBearer
 import asyncio
 
 app = APIRouter()
 
 session_service = SessionService()
+auth_service = AuthService()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    user = auth_service.get_current_user(token)
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user
+
 
 @app.post("/sessions/", response_model=Session, status_code=201)
-def create_session():
+def create_session(current_user: User = Depends(get_current_user)):
     """
     Create a new session.
     """
     return session_service.create_session()
 
 @app.get("/sessions/{session_id}", response_model=Session)
-def get_session(session_id: SessionID):
+def get_session(session_id: SessionID, current_user: User = Depends(get_current_user)):
     """
     Get a session by its ID.
     """
@@ -26,7 +41,7 @@ def get_session(session_id: SessionID):
     return session
 
 @app.post("/sessions/{session_id}/conversation")
-async def post_message(session_id: SessionID, message: Message = Body(...)):
+async def post_message(session_id: SessionID, message: Message = Body(...), current_user: User = Depends(get_current_user)):
     """
     Post a message to a session and get a streamed response.
     """
