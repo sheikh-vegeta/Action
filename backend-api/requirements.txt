@@ -9,3 +9,4 @@ pymongo
 python-jose[cryptography]
 passlib[bcrypt]
 websockets
+motor

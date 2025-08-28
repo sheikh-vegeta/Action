@@ -1,8 +1,6 @@
-import uvicorn
 from fastapi import FastAPI
-from app.interfaces.api.routes import app as api_router
-from .interfaces.api.auth_routes import router as auth_router
-from .interfaces.api.websocket_routes import router as websocket_router
+from .dependencies import client
+from .interfaces.api import routes, auth_routes, websocket_routes, tool_routes, vnc_routes
 
 app = FastAPI(
     title="Intelligent Conversation Agent API",
@@ -10,12 +8,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.include_router(api_router, prefix="/api", tags=["api"])
-app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(websocket_router, prefix="/ws", tags=["websockets"])
+@app.on_event("startup")
+async def startup_db_client():
+    # This is where you would connect to the database
+    pass
 
-from .interfaces.api.tool_routes import router as tool_router
-app.include_router(tool_router, prefix="/tools", tags=["tools"])
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()
 
-from .interfaces.api.vnc_routes import router as vnc_router
-app.include_router(vnc_router, prefix="/vnc", tags=["vnc"])
+app.include_router(routes.router, prefix="/api", tags=["api"])
+app.include_router(auth_routes.router, prefix="/auth", tags=["auth"])
+app.include_router(tool_routes.router, prefix="/tools", tags=["tools"])
+app.include_router(vnc_routes.router, prefix="/vnc", tags=["vnc"])

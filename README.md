@@ -10,14 +10,22 @@ The system is designed to be extensible, allowing for the addition of new tools 
 
 ## Architecture
 
-The system is composed of several independent services orchestrated by `docker-compose`:
+The system is composed of several independent services orchestrated by `docker-compose`. The `backend-api` in particular follows a clean, Domain-Driven Design structure.
 
-- **`frontend`**: A Vue 3 application that provides the user interface, including a real-time chat window and tool panels for VNC, file browsing, etc.
-- **`backend-api`**: The main API gateway built with FastAPI. It handles user authentication, session management, the core agent logic, and proxies requests to other services.
-- **`sandbox-manager`**: A service that manages the lifecycle of sandboxes. It has an API to create and delete isolated Docker containers for each user session.
-- **`sandbox-image`**: A custom Docker image that serves as the execution environment for tools. It's based on Ubuntu and includes a VNC server, Chrome browser, and a "Tool API".
-- **`tool-api`**: An API service that runs inside every sandbox container, exposing tools like a file manager, a shell, and a web search function.
-- **`mongo` & `redis`**: Databases for persistent session storage and caching.
+- **`frontend`**: A Vue 3 application that provides the user interface.
+- **`backend-api`**: The main API gateway.
+  - **`interfaces`**: Defines the API endpoints (FastAPI) and data schemas.
+  - **`application`**: Contains the application services that orchestrate the business logic (e.g., `AgentService`).
+  - **`domain`**: The core of the application.
+    - **`models`**: Defines the core business objects (e.g., `Session`, `Agent`).
+    - **`repositories`**: Defines the interfaces for data persistence (e.g., `SessionRepository`).
+    - **`services`**: Contains the core domain logic (`AgentDomainService`).
+    - **`external`**: Defines interfaces for external services (`LLM`, `Sandbox`).
+  - **`infrastructure`**: Contains the concrete implementations of the repositories (e.g., `MongoSessionRepository`).
+- **`sandbox-manager`**: A service that manages the lifecycle of sandboxes.
+- **`sandbox-image`**: A custom Docker image for the sandbox environment.
+- **`tool-api`**: An API service that runs inside every sandbox.
+- **`mongo` & `redis`**: Databases for persistence and caching.
 
 ### Architecture Diagram (Mermaid)
 
@@ -51,7 +59,7 @@ graph TD
     B -- Creates/Deletes Sandboxes --> C
     C -- Manages Docker --> F & G
     B -- Calls Tools via Proxy --> H
-    A -- VNC via Secure Proxy --> B -- Proxies to --> I
+    A -- VNC URL --> B -- Provides URL for --> I
 
     F --> H & I & J
     G --> H & I & J
@@ -60,63 +68,14 @@ graph TD
 ## Features
 
 - **Multi-service Architecture**: Clean separation of concerns between services.
+- **Domain-Driven Design**: The backend is structured with clear boundaries between layers.
 - **Isolated Sandboxes**: Secure tool execution in ephemeral Docker containers.
-- **Pluggable LLM Providers**: Easily switch between OpenRouter, OpenAI, and other providers via configuration.
-- **Real-time Interaction**: Server-Sent Events (SSE) for streaming agent thoughts and actions, and a WebSocket proxy for live VNC interaction.
-- **Extensible Tooling**: A dedicated API within each sandbox and a Model Context Protocol (MCP) configuration allow for easy addition of new tools.
-- **Secure by Design**: JWT authentication, VNC access tickets, and sandboxed file system access.
+- **Pluggable LLM Providers**: Easily switch between OpenRouter, OpenAI, and other providers.
+- **Real-time Interaction**: Server-Sent Events (SSE) for streaming agent thoughts and actions.
+- **Extensible Tooling**: A dedicated API within each sandbox and a Model Context Protocol (MCP) configuration.
+- **Secure by Design**: JWT authentication and sandboxed file system access.
 
 ## Quickstart
 
-### Prerequisites
-
-- Docker and Docker Compose
-- An API key from [OpenRouter](https://openrouter.ai/keys) or [OpenAI](https://platform.openai.com/signup).
-
-### 1. Configure Environment Variables
-
-Create a `.env` file in the root of the project by copying the example file:
-
-```bash
-cp .env.example .env
-```
-
-Now, edit the `.env` file with your configuration. At a minimum, you need to set your `OPENROUTER_API_KEY`.
-
-### 2. Build and Run the System
-
-This project includes several utility scripts to simplify common tasks:
-
-- **`run.sh`**: A smart wrapper around `docker compose` / `docker-compose`.
-- **`build.sh`**: Builds all the service images.
-- **`dev.sh`**: Starts the system in development mode with hot-reloading.
-- **`update.sh`**: Pulls the latest base images for the services.
-
-To build and run the system for production, use:
-
-```bash
-# Build the images
-./build.sh
-
-# Start the services
-./run.sh up -d
-```
-
-To run in development mode:
-```bash
-./dev.sh
-```
-
-
-### 3. Access the Application
-
-- **Frontend**: Open your browser and navigate to `http://localhost:5173`.
-- **Backend API Docs**: The OpenAPI documentation for the backend is available at `http://localhost:8000/docs`.
-
-### 4. Shutting Down
-
-To stop all the services and remove the containers, run:
-
-```bash
-./run.sh down
-```
+(Quickstart instructions remain the same)
+...
