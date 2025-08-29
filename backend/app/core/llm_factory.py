@@ -1,9 +1,9 @@
 import os
-from ...domain.external.llm import LLM
-from ...infrastructure.llm.openrouter import OpenRouterLLM
-from ...infrastructure.llm.groq import GroqLLM
-from ...infrastructure.llm.together import TogetherLLM
-from ...infrastructure.llm.huggingface import HuggingFaceLLM
+from app.domain.external.llm import LLM
+from app.infrastructure.llm.openrouter import OpenRouterLLM
+from app.infrastructure.llm.groq import GroqLLM
+from app.infrastructure.llm.together import TogetherLLM
+from app.infrastructure.llm.huggingface import HuggingFaceLLM
 
 def get_llm() -> LLM:
     provider = os.environ.get("LLM_PROVIDER", "openrouter").lower()

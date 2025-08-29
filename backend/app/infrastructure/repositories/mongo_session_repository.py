@@ -1,7 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List, Optional
-from ...domain.models.session import Session
-from ...domain.repositories.session_repository import SessionRepository
+from app.domain.models.session import Session
+from app.domain.repositories.session_repository import SessionRepository
 
 class MongoSessionRepository(SessionRepository):
     def __init__(self, client: AsyncIOMotorClient):

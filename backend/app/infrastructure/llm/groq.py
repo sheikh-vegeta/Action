@@ -1,6 +1,6 @@
 import groq
 from typing import List, Dict, Any
-from ...domain.external.llm import LLM
+from app.domain.external.llm import LLM
 
 class GroqLLM(LLM):
     def __init__(self, api_key: str, model: str):

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sse_starlette.sse import EventSourceResponse
-from ...application.services.agent_service import AgentService # This will be created later
-from ...dependencies import get_agent_service # This will be created later
-from ...domain.models.session import Session
+from app.application.services.agent_service import AgentService # This will be created later
+from app.dependencies import get_agent_service # This will be created later
+from app.domain.models.session import Session
 
 router = APIRouter()
 

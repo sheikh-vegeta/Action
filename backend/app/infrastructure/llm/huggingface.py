@@ -1,6 +1,6 @@
 from huggingface_hub import InferenceClient
 from typing import List, Dict, Any
-from ...domain.external.llm import LLM
+from app.domain.external.llm import LLM
 
 class HuggingFaceLLM(LLM):
     def __init__(self, api_key: str, model: str):
