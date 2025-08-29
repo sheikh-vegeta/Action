@@ -11,3 +11,5 @@ sse-starlette
 groq
 together
 huggingface_hub
+portkey-ai
+cohere

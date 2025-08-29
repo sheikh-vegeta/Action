@@ -1,7 +1,7 @@
 # Intelligent Conversation Agent System
 
 <p align="center">
-  <img src="https://octodex.github.com/images/hula_loop_octodex03.gif" alt="Hula Loop Octodex" width="200"/>
+  <img src="https://octodex.github.com/images/daftpunktocat-guy.gif" alt="Daft Punk Octodex" width="200"/>
 </p>
 
 This project is a comprehensive, multi-service intelligent conversation agent system. It features a FastAPI backend using Domain-Driven Design (DDD), a Vue 3 frontend, and an isolated Docker-based sandbox environment for secure tool execution.
